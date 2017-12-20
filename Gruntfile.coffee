@@ -27,6 +27,8 @@ module.exports = (grunt) ->
 // @version       <%= pkg.version %>
 // @description   <%= pkg.description %>
 // @include       https://howdy.tamu.edu/render.UserLayoutRootNode.uP?uP_tparam=utf&utf=%2fcp%2fip%2flogin%3fsys%3dsctssb%26url%3dhttps://compass-ssb.tamu.edu/pls/PROD/BWXKTSCHD.p_textScheduleStudent
+// @include       https://registrar.tamu.edu/Catalogs,-Policies-Procedures/Academic-Calendar
+// @include       http://registrar.tamu.edu/Catalogs,-Policies-Procedures/Academic-Calendar
 // ==/UserScript==
 
 //#include

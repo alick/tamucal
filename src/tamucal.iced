@@ -423,18 +423,18 @@ unsafeWindow.tamucal=tamucal=new ->
 
     @ui={}
     # button
-    $('.pageheaderlinks > div').prepend("""
-      <input type="button" id="tamucal_button" class="souSuo yahei" style="width:200px" value="TAMUCAL: Export to iCalendar">
+    $('div#printButton').prepend("""
+      <input type="button" id="tamucal_button" value="TAMUCAL Export">
     """)
     @ui.button=$('#tamucal_button')
     @ui.button.on 'click', =>@make()
     # log
-    $('.pagebodydiv > br:nth-child(5)').after("""
-      <pre class="tab" style="background:#F4F4F4"><code id="tamucal_status" style="
+    $('section#TabSection').after("""
+      <div><pre class="tab" style="background:#F4F4F4"><code id="tamucal_status" style="
         font-size: 10pt;
         line-height: 1.2em;
-        font-family: Consolas, 'Courier New', monospace;
-      "></code></pre>
+        font-family: Consolas, monospace;
+      "></code></pre></div>
     """)
     @ui.status=$('#tamucal_status')
     @ui.log=(s)->@status.append(s+'\n')
@@ -448,13 +448,9 @@ unsafeWindow.tamucal=tamucal=new ->
 
   @make=->
     @ui.log "******TAMUCAL******"
-    termIdP=parseTermId($('.staticheaders').val())
+    termIdP=parseTermId($('.ajax__tab_header>.ajax__tab_active a.ajax__tab_tab>span').text())
     term=printTermId(termIdP)
     @ui.log 'Term: '+term
-    return
-    if termIdP.termN!=1 && termIdP.termN!=2
-      @ui.log '不支持小学期！'
-      return
 
     await get_L defer(Lraw)
     @ui.log 'list完成'
