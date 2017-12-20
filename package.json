@@ -1,17 +1,17 @@
 {
-  "name": "thucal2",
-  "description": "Export Tsinghua University curriculum to iCalendar",
-  "version": "0.4.0",
-  "homepage": "https://github.com/summivox/thucal2",
+  "name": "tamucal",
+  "description": "Export Texas A&M University curriculum to iCalendar",
+  "version": "0.1.0",
+  "homepage": "https://github.com/alick/tamucal",
   "author": {
-    "name": "summivox"
+    "name": "Alick Zhao"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/summivox/thucal2.git"
+    "url": "git://github.com/alick/tamucal.git"
   },
   "bugs": {
-    "url": "https://github.com/summivox/thucal2/issues"
+    "url": "https://github.com/alick/tamucal/issues"
   },
   "licenses": [
     {

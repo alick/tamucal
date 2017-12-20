@@ -47,20 +47,11 @@ period=[
 )
 
 parseTermId=(termId)->
-  if !(match=/(\d{4})-(\d{4})-(\d)/.exec termId)? then return null
-  {
-    beginY: parseInt match[1]
-    endY  : parseInt match[2]
-    termN : parseInt match[3]
-  }
+  if !(match=/(Spring|Summer|Fall \d{4})/.exec termId)? then return null
+  match[1]
 
 printTermId=(termIdP)->
-  termIdP.beginY+'-'+termIdP.endY+'-'+(
-    switch termIdP.termN
-      when 1 then '秋'
-      when 2 then '春'
-      else '不科学'
-  )
+  termIdP
 
 parseTimeStr=(infoStr)->
   if !(match=/时间(\d{1,2}:\d{1,2})-(\d{1,2}:\d{1,2})/.exec(infoStr))? then return null
@@ -242,17 +233,17 @@ combine=(G, Lrel, cat, origin)->
 ## ical
 ICAL_HEADER="""
 BEGIN:VCALENDAR
-PRODID:-//smilekzs//thucal//EN
+PRODID:-//alick.me//tamucal//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-TIMEZONE:Asia/Shanghai
+X-WR-TIMEZONE:America/Chicago
 BEGIN:VTIMEZONE
-TZID:Asia/Shanghai
-X-LIC-LOCATION:Asia/Shanghai
+TZID:America/Chicago
+X-LIC-LOCATION:America/Chicago
 BEGIN:STANDARD
-TZOFFSETFROM:+0800
-TZOFFSETTO:+0800
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0600
 TZNAME:CST
 DTSTART:19700101T000000
 END:STANDARD
@@ -266,8 +257,8 @@ BEGIN:VEVENT
 SUMMARY:<name>
 LOCATION:<loc>
 DESCRIPTION:<desc>
-DTSTART;TZID=Asia/Shanghai:<start>
-DTEND;TZID=Asia/Shanghai:<end>
+DTSTART;TZID=America/Chicago:<start>
+DTEND;TZID=America/Chicago:<end>
 <recur>SEQUENCE:0
 UID:<uid>
 TRANSP:OPAQUE
@@ -275,7 +266,7 @@ STATUS:CONFIRMED
 END:VEVENT
 """
 ICAL_XRULE="<x>RULE:FREQ=WEEKLY;COUNT=<n>\n"
-ICAL_XDATE="<x>DATE;TZID=Asia/Shanghai:<list>\n"
+ICAL_XDATE="<x>DATE;TZID=America/Chicago:<list>\n"
 ICAL_WEEK="""
 BEGIN:VEVENT
 SUMMARY:<name>
@@ -366,7 +357,7 @@ ical=new ->
     ).join('\n')
 
   @make=(Gr, Gl, origin)->
-    @uidBase=moment().unix()+'@thucal'
+    @uidBase=moment().unix()+'@tamucal'
     [
       ICAL_HEADER
       @makeG(Gr, origin)
@@ -387,33 +378,33 @@ stringify=(p)->
   ).join('&')
 get_L=(autocb)->
   await GM_xmlhttpRequest {
-    url: thucal.params.listUrl + '?m=' + thucal.params.listVerb
+    url: tamucal.params.listUrl + '?m=' + tamucal.params.listVerb
     method: 'GET'
     onload: defer(resp)
     onerror: (err)->
-      thucal.ui.log ERR_MSG_LIST
+      tamucal.ui.log ERR_MSG_LIST
       throw Error('get_L: no token: ' + err.toString())
   }
   if !(match=/name="token" value="([\da-f]+)"/.exec(resp.responseText))?
-    thucal.ui.log ERR_MSG_LIST
+    tamucal.ui.log ERR_MSG_LIST
     throw Error 'get_L: no token: response does not contain token'
   params=
-    'm': thucal.params.listVerb
-    'role': thucal.params.listRole
+    'm': tamucal.params.listVerb
+    'role': tamucal.params.listRole
     'grrlID': ''
     'displayType': ''
     'token': match[1]
     'p_start_date': moment().format('YYYYMMDD')
     'p_end_date': moment().add(1, 'years').format('YYYYMMDD')
   await GM_xmlhttpRequest {
-    url: thucal.params.listUrl
+    url: tamucal.params.listUrl
     method: 'POST'
     headers:
       "Content-Type": "application/x-www-form-urlencoded"
     data: stringify(params)
     onload: defer(resp)
     onerror: (err)->
-      thucal.ui.log ERR_MSG_LIST
+      tamucal.ui.log ERR_MSG_LIST
       throw Error('get_L: post error: ' + err.toString())
   }
   $(resp.responseText).filter('a')
@@ -424,7 +415,7 @@ download=(cont, name)->
 
 ############
 ## userscript logic
-unsafeWindow.thucal=thucal=new ->
+unsafeWindow.tamucal=tamucal=new ->
   @lib={$, moment, saveAs}
   @init=->
 
@@ -432,40 +423,35 @@ unsafeWindow.thucal=thucal=new ->
 
     @ui={}
     # button
-    $('div.tddr').prepend("""
-      <input type="button" id="thucal_button" class="souSuo yahei" style="width:200px" value="THUCAL: 导出为iCalendar">
+    $('.pageheaderlinks > div').prepend("""
+      <input type="button" id="tamucal_button" class="souSuo yahei" style="width:200px" value="TAMUCAL: Export to iCalendar">
     """)
-    @ui.button=$('#thucal_button')
+    @ui.button=$('#tamucal_button')
     @ui.button.on 'click', =>@make()
     # log
-    $('#a1_1').parentsUntil('div.xinXi2').last().after("""
-      <pre class="tab" style="background:#F4F4F4"><code id="thucal_status" style="
+    $('.pagebodydiv > br:nth-child(5)').after("""
+      <pre class="tab" style="background:#F4F4F4"><code id="tamucal_status" style="
         font-size: 10pt;
         line-height: 1.2em;
         font-family: Consolas, 'Courier New', monospace;
       "></code></pre>
     """)
-    @ui.status=$('#thucal_status')
+    @ui.status=$('#tamucal_status')
     @ui.log=(s)->@status.append(s+'\n')
 
     ## params
 
-    if document.location.toString().match(/Yjs/)
-      @params=
-        listUrl: 'http://zhjw.cic.tsinghua.edu.cn/jxmh.do'
-        listVerb: 'yjs_jxrl_all'
-        listRole: 'yjs'
-    else
-      @params=
-        listUrl: 'http://zhjw.cic.tsinghua.edu.cn/jxmh.do'
-        listVerb: 'bks_jxrl_all'
-        listRole: 'bks'
+    @params=
+      listUrl: 'http://zhjw.cic.tsinghua.edu.cn/jxmh.do'
+      listVerb: 'bks_jxrl_all'
+      listRole: 'bks'
 
   @make=->
-    @ui.log "******THUCAL2******"
-    termIdP=parseTermId($('input[name=p_xnxq]').val())
+    @ui.log "******TAMUCAL******"
+    termIdP=parseTermId($('.staticheaders').val())
     term=printTermId(termIdP)
-    @ui.log '学期：'+term
+    @ui.log 'Term: '+term
+    return
     if termIdP.termN!=1 && termIdP.termN!=2
       @ui.log '不支持小学期！'
       return
@@ -488,11 +474,11 @@ unsafeWindow.thucal=thucal=new ->
     try
       ret=ical.make(Gr, Gl, origin)
       #console.log ret
-      download(ret, "thucal-#{term}.ics")
+      download(ret, "tamucal-#{term}.ics")
       @ui.log '导出成功！'
     catch e
       @ui.log '导出错误：'+e.toString()
       return console.error e
   this
 
-$(document).ready(->thucal.init())
+$(document).ready(->tamucal.init())

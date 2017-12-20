@@ -23,19 +23,17 @@ module.exports = (grunt) ->
 // Copyright (c) <%= grunt.template.today('yyyy') %>, <%= pkg.author.name %>. (MIT Licensed)
 // ==UserScript==
 // @name          <%= pkg.name %>
-// @namespace     http://github.com/smilekzs
+// @namespace     https://github.com/alick
 // @version       <%= pkg.version %>
 // @description   <%= pkg.description %>
-// @include       *.cic.tsinghua.edu.cn/syxk.vsyxkKcapb.do*
-// @include       *.cic.tsinghua.edu.cn/xkBks.vxkBksXkbBs.do*
-// @include       *.cic.tsinghua.edu.cn/xkYjs.vxkYjsXkbBs.do*
+// @include       https://howdy.tamu.edu/render.UserLayoutRootNode.uP?uP_tparam=utf&utf=%2fcp%2fip%2flogin%3fsys%3dsctssb%26url%3dhttps://compass-ssb.tamu.edu/pls/PROD/BWXKTSCHD.p_textScheduleStudent
 // ==/UserScript==
 
 //#include
           '''
       dist: {
-        src: ['lib/FileSaver.min.js', 'lib/jquery-1.8.2.min.js', 'lib/moment.min.gm.js', 'build/thucal2.js']
-        dest: 'dist/thucal2.user.js'
+        src: ['lib/FileSaver.min.js', 'lib/jquery-1.8.2.min.js', 'lib/moment.min.gm.js', 'build/tamucal.js']
+        dest: 'dist/tamucal.user.js'
       }
 
     watch:

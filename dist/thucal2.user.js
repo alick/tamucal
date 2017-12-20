@@ -1,4 +1,4 @@
-// Copyright (c) 2014, summivox. (MIT Licensed)
+// Copyright (c) 2016, summivox. (MIT Licensed)
 // ==UserScript==
 // @name          thucal2
 // @namespace     http://github.com/smilekzs
