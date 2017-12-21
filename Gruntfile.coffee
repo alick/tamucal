@@ -40,8 +40,8 @@ module.exports = (grunt) ->
 
     watch:
       iced:
-        files: ['src/*.iced']
-        tasks: ['iced']
+        files: ['src/*.iced', 'lib/*.js']
+        tasks: ['release']
 
     clean:
       build: ['build/*']
@@ -85,5 +85,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
   grunt.registerTask 'debug', ['iced:debug']
-  grunt.registerTask 'dev', ['debug', 'watch']
+  grunt.registerTask 'dev', ['watch']
   grunt.registerTask 'release', ['debug', 'concat']
