@@ -183,23 +183,9 @@ parse_G=(root)->
 
 ############
 ## combine
-getOrigin=(Gr, Gl, L)->
-  lastDay=L[L.length-1]
-  lastItems=lastDay.items
-  lastItem=lastItems[lastItems.length-1]
-  z=lastDay.ymd.day()
-  if z==0 then z=7 # moment.day() returns 0 for Sunday
-
-  maxW=0
-  for p in [6..1] by -1
-    for it in Gr[z][p]
-      if it.name==lastItem.name && (w=it.week[it.week.length-1])>maxW
-        maxW=w
-    for it in Gl[z][p]
-      if it.name==lastItem.name && (w=it.week[it.week.length-1])>maxW
-        maxW=w
-
-  lastDay.ymd.clone().subtract(maxW-1, 'weeks').subtract(z-1, 'days')
+getOrigin=(year)->
+  date=$('div.span10:contains("First day of")').filter(':visible').prev().text()
+  moment(date+year, 'MMM DDYYYY')
 
 # remap L to Lrel[day-since-origin]
 getLrel=(L, origin)->
@@ -360,9 +346,9 @@ ical=new ->
     @uidBase=moment().unix()+'@tamucal'
     [
       ICAL_HEADER
-      @makeG(Gr, origin)
-      @makeG(Gl, origin)
-      @makeW(origin, (w)->"第#{w}周")
+      #@makeG(Gr, origin)
+      #@makeG(Gl, origin)
+      @makeW(origin, (w)->"Week #{w}")
       ICAL_FOOTER
     ].join('\n')
   this
@@ -441,36 +427,39 @@ unsafeWindow.tamucal=tamucal=new ->
 
     ## params
 
-    @params=
-      listUrl: 'http://zhjw.cic.tsinghua.edu.cn/jxmh.do'
-      listVerb: 'bks_jxrl_all'
-      listRole: 'bks'
+    #@params=
+      #listUrl: 'http://zhjw.cic.tsinghua.edu.cn/jxmh.do'
+      #listVerb: 'bks_jxrl_all'
+      #listRole: 'bks'
 
   @make=->
     @ui.log "******TAMUCAL******"
     termIdP=parseTermId($('.ajax__tab_header>.ajax__tab_active a.ajax__tab_tab>span').text())
     term=printTermId(termIdP)
+    year=term.substring(term.length-4)
     @ui.log 'Term: '+term
 
-    await get_L defer(Lraw)
-    @ui.log 'list完成'
+    #await get_L defer(Lraw)
+    #@ui.log 'list完成'
 
     try
-      L=parse_L(Lraw, termIdP)
-      {Gr, Gl}=parse_G($(document))
-      origin=getOrigin(Gr, Gl, L)
-      Lrel=getLrel(L, origin)
-      combine(Gr, Lrel, '上课', origin)
-      combine(Gl, Lrel, '实验', origin)
-      @ui.log '分析完成'
+      #L=parse_L(Lraw, termIdP)
+      #{Gr, Gl}=parse_G($(document))
+      origin=getOrigin(year)
+      @ui.log 'First day: '+origin.format()
+      #Lrel=getLrel(L, origin)
+      #combine(Gr, Lrel, '上课', origin)
+      #combine(Gl, Lrel, '实验', origin)
+      #@ui.log '分析完成'
     catch e
       @ui.log '分析错误：'+e.toString()
       return console.error e
 
     try
-      ret=ical.make(Gr, Gl, origin)
-      #console.log ret
-      download(ret, "tamucal-#{term}.ics")
+      ret=ical.make(null, null, origin)
+      console.log ret
+      download(ret, "tamucal-"+term+".ics")
+      #download(ret, "tamucal-#{term}.ics")
       @ui.log '导出成功！'
     catch e
       @ui.log '导出错误：'+e.toString()
