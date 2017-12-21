@@ -47,8 +47,8 @@ period=[
 )
 
 parseTermId=(termId)->
-  if !(match=/(Spring|Summer|Fall \d{4})/.exec termId)? then return null
-  match[1]
+  if !(match=/(Spring|Summer|Fall) \d{4}/.exec termId)? then return null
+  match[0]
 
 printTermId=(termIdP)->
   termIdP
@@ -332,7 +332,12 @@ ical=new ->
     ret.map((x)=>@template ICAL_EVENT, x).join('\n')
   @makeW=(origin, nameFactory)->
     (for w in [1..16] by 1
-      start=origin.clone().add(w-1, 'weeks')
+      if w > 1
+        # Mark Monday for Week 2+
+        start=origin.clone().add(w-1, 'weeks').day(1)
+      else
+        # Mark the first day of semester.
+        start=origin
       end=start.clone().add(1, 'days')
       @template ICAL_WEEK, {
         name  : @escape nameFactory w
@@ -446,23 +451,22 @@ unsafeWindow.tamucal=tamucal=new ->
       #L=parse_L(Lraw, termIdP)
       #{Gr, Gl}=parse_G($(document))
       origin=getOrigin(year)
-      @ui.log 'First day: '+origin.format()
+      @ui.log 'First day: '+origin.format('YYYY-MM-DD')
       #Lrel=getLrel(L, origin)
       #combine(Gr, Lrel, '上课', origin)
       #combine(Gl, Lrel, '实验', origin)
       #@ui.log '分析完成'
     catch e
-      @ui.log '分析错误：'+e.toString()
+      @ui.log 'Error in parsing: '+e.toString()
       return console.error e
 
     try
       ret=ical.make(null, null, origin)
-      console.log ret
-      download(ret, "tamucal-"+term+".ics")
-      #download(ret, "tamucal-#{term}.ics")
-      @ui.log '导出成功！'
+      #console.log ret
+      download(ret, "tamucal-#{term}.ics")
+      @ui.log 'Exported!'
     catch e
-      @ui.log '导出错误：'+e.toString()
+      @ui.log 'Error in exporting: '+e.toString()
       return console.error e
   this
 
