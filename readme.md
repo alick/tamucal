@@ -2,21 +2,21 @@
 
 **Download**: Navigate to the [release](https://github.com/alick/tamucal/releases) tab.
 
-##Screenshot
+## Screenshot
 
-![][screenshot/ui.png]
+![](screenshot/ui.png?raw=true)
 
-##Main Features
+## Main Features
 
 * Fully automated operation: only one click is needed
-    * Needs no "origin date" input
+    * Needs no "first day of semester" input
     * Automatically saves exported calendar (through HTML5 Blob)
 * Standard iCalendar format for import into popular calendar apps
 * All processing done locally for the sake of privacy
 
 TODO: Curriculum export
 
-##Build
+## Build
 
 TAMUCAL is built using [GRUNT](http://gruntjs.com).
 
@@ -28,7 +28,7 @@ grunt release
 
 Use `dist/tamucal.user.js`
 
-##License
+## License
 
 MIT
 
